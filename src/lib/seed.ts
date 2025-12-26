@@ -1,5 +1,4 @@
-import { db } from '@/lib/firebase';
-import { collection, addDoc, getDocs, writeBatch, doc } from 'firebase/firestore';
+import { supabase } from '@/lib/supabase';
 
 const DUMMY_ARTWORKS = [
     {
@@ -46,22 +45,25 @@ const DUMMY_ARTWORKS = [
 
 export async function seedDatabase() {
     try {
-        const batch = writeBatch(db);
-        const collectionRef = collection(db, 'artworks');
+        // Check if data exists
+        const { count, error: countError } = await supabase
+            .from('artworks')
+            .select('*', { count: 'exact', head: true });
 
-        // Check if empty to avoid duplicates (optional, but good for safety)
-        const snapshot = await getDocs(collectionRef);
-        if (!snapshot.empty) {
+        if (countError) throw countError;
+
+        if (count && count > 0) {
             console.log('Database already has data. Skipping seed.');
             return { success: false, message: 'Database already populated' };
         }
 
-        for (const artwork of DUMMY_ARTWORKS) {
-            const docRef = doc(collectionRef); // Generate new ID
-            batch.set(docRef, artwork);
-        }
+        // Insert data using Supabase
+        const { error: insertError } = await supabase
+            .from('artworks')
+            .insert(DUMMY_ARTWORKS);
 
-        await batch.commit();
+        if (insertError) throw insertError;
+
         console.log('Seeding complete!');
         return { success: true, message: 'Seeding successful' };
     } catch (error: any) {

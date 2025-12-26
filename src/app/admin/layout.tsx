@@ -1,33 +1,39 @@
-'use client';
 import { useEffect, useState } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { supabase } from '@/lib/supabase';
 import { useRouter, usePathname } from 'next/navigation';
 import { LogOut } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
+    const [session, setSession] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
     const pathname = usePathname();
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setSession(session);
             setLoading(false);
-
-            if (!currentUser && !pathname.includes('/login')) {
+            if (!session && !pathname.includes('/login')) {
                 router.push('/admin/login');
             }
         });
 
-        return () => unsubscribe();
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+            if (!session && !pathname.includes('/login')) {
+                router.push('/admin/login');
+            }
+        });
+
+        return () => subscription.unsubscribe();
     }, [router, pathname]);
 
     if (loading) return <div className="h-screen bg-black text-white flex items-center justify-center font-mono">LOADING_SYSTEM...</div>;
 
-    if (!user && !pathname.includes('/login')) return null;
+    if (!session && !pathname.includes('/login')) return null;
 
     // Don't show layout on login page
     if (pathname.includes('/login')) return <>{children}</>;
@@ -45,7 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <Link href="/" target="_blank" className="block text-gray-400 hover:text-white transition-colors text-sm font-mono">View Live Site ↗</Link>
                     </nav>
                 </div>
-                <button onClick={() => auth.signOut()} className="flex items-center gap-2 text-red-500 hover:text-red-400">
+                <button onClick={() => supabase.auth.signOut()} className="flex items-center gap-2 text-red-500 hover:text-red-400">
                     <LogOut size={16} /> Logout
                 </button>
             </aside>

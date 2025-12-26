@@ -1,7 +1,6 @@
 'use client';
+import { supabase } from '@/lib/supabase';
 import { useArtworks } from '@/hooks/useArtworks';
-import { db } from '@/lib/firebase';
-import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Pencil, Trash, Plus } from 'lucide-react';
 import Link from 'next/link';
 
@@ -10,12 +9,28 @@ export default function AdminDashboard() {
 
     const toggleStatus = async (id: string, currentStatus: string) => {
         const newStatus = currentStatus === 'available' ? 'sold' : 'available';
-        await updateDoc(doc(db, 'artworks', id), { status: newStatus });
+        const { error } = await supabase
+            .from('artworks')
+            .update({ status: newStatus })
+            .eq('id', id);
+
+        if (error) {
+            console.error(error);
+            alert('Error updating status');
+        }
     };
 
     const deleteArtwork = async (id: string) => {
         if (confirm('Are you sure you want to delete this artwork?')) {
-            await deleteDoc(doc(db, 'artworks', id));
+            const { error } = await supabase
+                .from('artworks')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                console.error(error);
+                alert('Error deleting artwork');
+            }
         }
     };
 
@@ -57,8 +72,8 @@ export default function AdminDashboard() {
                                     <button
                                         onClick={() => toggleStatus(art.id, art.status)}
                                         className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${art.status === 'available'
-                                                ? 'border-green-500 text-green-500'
-                                                : 'border-red-500 text-red-500 bg-red-500/10'
+                                            ? 'border-green-500 text-green-500'
+                                            : 'border-red-500 text-red-500 bg-red-500/10'
                                             }`}
                                     >
                                         {art.status}

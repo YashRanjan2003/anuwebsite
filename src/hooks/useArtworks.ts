@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { supabase } from '@/lib/supabase';
 
 export interface Artwork {
     id: string;
@@ -19,31 +18,46 @@ export function useArtworks(category?: string) {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        setLoading(true);
-        // Simple query first, client-side filtering for simplicity unless large dataset
-        const q = query(collection(db, 'artworks')); // Remove orderBy for now to avoid index requirements error initally
+        fetchArtworks();
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const data = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            })) as Artwork[];
+        // Real-time subscription
+        const channel = supabase
+            .channel('artworks_changes')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'artworks' },
+                (payload) => {
+                    fetchArtworks();
+                }
+            )
+            .subscribe();
 
-            // Client side filter to handle 'All' and specific categories without complex compound queries requiring indexes immediately
-            const filtered = category && category !== 'All'
-                ? data.filter(item => item.category === category)
-                : data;
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [category]);
 
-            setArtworks(filtered);
-            setLoading(false);
-        }, (err) => {
+    async function fetchArtworks() {
+        try {
+            setLoading(true);
+
+            let query = supabase.from('artworks').select('*');
+
+            if (category && category !== 'All') {
+                query = query.eq('category', category);
+            }
+
+            const { data, error } = await query.order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setArtworks((data as any[]) || []);
+        } catch (err: any) {
             console.error("Error fetching artworks:", err);
             setError(err.message);
+        } finally {
             setLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, [category]);
+        }
+    }
 
     return { artworks, loading, error };
 }

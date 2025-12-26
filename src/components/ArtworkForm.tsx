@@ -1,8 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { Upload } from 'lucide-react';
@@ -50,13 +48,28 @@ export default function ArtworkForm({ initialData, id }: { initialData?: any, id
                 imageUrl = publicURL.publicUrl;
             }
 
-            const payload = { ...data, imageUrl, price: Number(data.price) };
+            const payload = {
+                ...data,
+                imageUrl,
+                price: Number(data.price),
+                status: data.status
+            };
 
+            let error;
             if (id) {
-                await updateDoc(doc(db, 'artworks', id), payload);
+                const { error: updateError } = await supabase
+                    .from('artworks')
+                    .update(payload)
+                    .eq('id', id);
+                error = updateError;
             } else {
-                await addDoc(collection(db, 'artworks'), payload);
+                const { error: insertError } = await supabase
+                    .from('artworks')
+                    .insert(payload);
+                error = insertError;
             }
+
+            if (error) throw error;
 
             router.push('/admin');
         } catch (e: any) {
