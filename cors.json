@@ -1,8 +1,6 @@
 [
     {
         "origin": [
-            "http://localhost:3000",
-            "http://192.168.1.175:3000",
             "*"
         ],
         "method": [
@@ -16,7 +14,8 @@
         "responseHeader": [
             "Content-Type",
             "Access-Control-Allow-Origin",
-            "x-goog-resumable"
+            "x-goog-resumable",
+            "Authorization"
         ],
         "maxAgeSeconds": 3600
     }

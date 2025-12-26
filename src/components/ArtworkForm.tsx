@@ -1,9 +1,9 @@
 'use client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
-import { db, storage } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
+import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { Upload } from 'lucide-react';
 
@@ -28,11 +28,26 @@ export default function ArtworkForm({ initialData, id }: { initialData?: any, id
         try {
             let imageUrl = initialData?.imageUrl || '';
 
-            // Upload Image if selected
+            // Upload Image to Supabase
             if (imageFile) {
-                const storageRef = ref(storage, `artworks/${Date.now()}-${imageFile.name}`);
-                const snapshot = await uploadBytes(storageRef, imageFile);
-                imageUrl = await getDownloadURL(snapshot.ref);
+                // 1. Unique File Name
+                const fileExt = imageFile.name.split('.').pop();
+                const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
+                const filePath = `${fileName}`;
+
+                // 2. Upload
+                const { error: uploadError } = await supabase.storage
+                    .from('artworks')
+                    .upload(filePath, imageFile);
+
+                if (uploadError) throw uploadError;
+
+                // 3. Get Public URL
+                const { data: publicURL } = supabase.storage
+                    .from('artworks')
+                    .getPublicUrl(filePath);
+
+                imageUrl = publicURL.publicUrl;
             }
 
             const payload = { ...data, imageUrl, price: Number(data.price) };
@@ -44,9 +59,9 @@ export default function ArtworkForm({ initialData, id }: { initialData?: any, id
             }
 
             router.push('/admin');
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
-            alert('Error saving artwork');
+            alert('Error saving artwork: ' + e.message);
         } finally {
             setUploading(false);
         }
