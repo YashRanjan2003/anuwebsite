@@ -46,10 +46,10 @@ export default function AdminDashboard() {
     if (loadingArtworks && activeTab === 'inventory') return <div className="text-journal-secondary font-serif italic text-2xl animate-pulse">Opening Ledger...</div>;
 
     return (
-        <div>
+        <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-end mb-8 border-b-2 border-journal-accent/20 pb-4">
                 <div>
-                    <h1 className="text-5xl font-serif italic text-journal-accent">Gallery Ledger</h1>
+                    <h1 className="text-4xl md:text-5xl font-serif italic text-journal-accent">Gallery Ledger</h1>
                     <p className="text-journal-secondary font-sans mt-2">Manage collection and shipments</p>
                 </div>
 
@@ -73,14 +73,14 @@ export default function AdminDashboard() {
                 /* INVENTORY TAB */
                 <>
                     <div className="flex justify-end mb-6">
-                        <Link href="/admin/new" className="bg-journal-secondary text-white px-6 py-3 rounded-sm font-serif italic flex items-center gap-2 hover:bg-journal-accent transition-colors">
+                        <Link href="/admin/new" className="bg-journal-secondary text-white px-6 py-3 rounded-sm font-serif italic flex items-center gap-2 hover:bg-journal-accent transition-colors shadow-md">
                             <Plus size={20} /> New Entry
                         </Link>
                     </div>
 
                     <div className="bg-white border border-journal-paper shadow-sm rounded-sm overflow-hidden">
                         <table className="w-full text-left">
-                            <thead className="bg-journal-paper/30 text-journal-secondary font-bold text-xs uppercase tracking-widest">
+                            <thead className="bg-journal-paper/50 text-journal-secondary font-bold text-xs uppercase tracking-widest border-b border-journal-paper">
                                 <tr>
                                     <th className="p-4">Artwork</th>
                                     <th className="p-4">Price</th>
@@ -90,10 +90,10 @@ export default function AdminDashboard() {
                             </thead>
                             <tbody className="divide-y divide-journal-paper/50 font-serif">
                                 {artworks.map((art) => (
-                                    <tr key={art.id} className="hover:bg-journal-paper/10 transition-colors">
+                                    <tr key={art.id} className="hover:bg-journal-paper/20 transition-colors">
                                         <td className="p-4">
                                             <div className="flex items-center gap-4">
-                                                {art.imageUrl && <img src={art.imageUrl} className="w-12 h-12 object-cover border border-journal-paper" />}
+                                                {art.imageUrl && <img src={art.imageUrl} className="w-16 h-16 object-cover border border-journal-paper rounded-sm" />}
                                                 <div>
                                                     <p className="font-bold text-foreground text-lg">{art.title}</p>
                                                     <p className="text-xs text-journal-secondary font-sans uppercase tracking-wider">{art.category}</p>
@@ -104,19 +104,19 @@ export default function AdminDashboard() {
                                         <td className="p-4">
                                             <button
                                                 onClick={() => toggleStatus(art.id, art.status)}
-                                                className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${art.status === 'available'
-                                                    ? 'border-green-600 text-green-700 bg-green-50'
-                                                    : 'border-red-600 text-red-700 bg-red-50'
+                                                className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border transition-colors ${art.status === 'available'
+                                                    ? 'border-green-600 text-green-700 bg-green-50 hover:bg-green-100'
+                                                    : 'border-red-600 text-red-700 bg-red-50 hover:bg-red-100'
                                                     }`}
                                             >
                                                 {art.status}
                                             </button>
                                         </td>
                                         <td className="p-4 text-right space-x-2">
-                                            <button className="text-journal-secondary hover:text-foreground p-2">
+                                            <button className="text-journal-secondary hover:text-foreground p-2 transition-colors">
                                                 <Pencil size={18} />
                                             </button>
-                                            <button onClick={() => deleteArtwork(art.id)} className="text-red-400 hover:text-red-700 p-2">
+                                            <button onClick={() => deleteArtwork(art.id)} className="text-red-400 hover:text-red-700 p-2 transition-colors">
                                                 <Trash size={18} />
                                             </button>
                                         </td>
@@ -135,7 +135,7 @@ export default function AdminDashboard() {
                         <div className="p-12 text-center text-journal-secondary italic font-serif text-xl">No orders recorded yet.</div>
                     ) : (
                         <table className="w-full text-left">
-                            <thead className="bg-journal-paper/30 text-journal-secondary font-bold text-xs uppercase tracking-widest">
+                            <thead className="bg-journal-paper/50 text-journal-secondary font-bold text-xs uppercase tracking-widest border-b border-journal-paper">
                                 <tr>
                                     <th className="p-4">Order ID</th>
                                     <th className="p-4">Customer</th>
@@ -147,13 +147,13 @@ export default function AdminDashboard() {
                             </thead>
                             <tbody className="divide-y divide-journal-paper/50 font-sans text-sm">
                                 {orders.map(order => (
-                                    <tr key={order.id} className="hover:bg-journal-paper/10">
-                                        <td className="p-4 font-mono text-xs">{order.id.slice(0, 8)}...</td>
+                                    <tr key={order.id} className="hover:bg-journal-paper/20 transition-colors">
+                                        <td className="p-4 font-mono text-xs text-journal-secondary">{order.id.slice(0, 8)}...</td>
                                         <td className="p-4 font-bold text-foreground">
                                             {order.profiles?.full_name || 'Guest'}
-                                            <div className="text-xs text-journal-secondary font-normal">{order.user_id}</div>
+                                            <div className="text-xs text-journal-secondary font-normal">{order.user_id?.slice(0, 8)}...</div>
                                         </td>
-                                        <td className="p-4 font-serif text-lg">${order.total_amount}</td>
+                                        <td className="p-4 font-serif text-lg text-foreground">${order.total_amount}</td>
                                         <td className="p-4">
                                             <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
                                                     order.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
@@ -161,12 +161,12 @@ export default function AdminDashboard() {
                                                 {order.status}
                                             </span>
                                         </td>
-                                        <td className="p-4 max-w-xs truncate" title={order.shipping_address}>{order.shipping_address}</td>
+                                        <td className="p-4 max-w-xs truncate text-journal-secondary" title={order.shipping_address}>{order.shipping_address}</td>
                                         <td className="p-4 text-right">
                                             {order.status !== 'shipped' && (
                                                 <button
                                                     onClick={() => updateOrderStatus(order.id, 'shipped')}
-                                                    className="text-xs bg-journal-accent text-white px-3 py-1 hover:bg-journal-secondary transition-colors"
+                                                    className="text-xs bg-journal-accent text-white px-4 py-2 hover:bg-journal-secondary transition-colors rounded-sm shadow-sm"
                                                 >
                                                     Mark Shipped
                                                 </button>

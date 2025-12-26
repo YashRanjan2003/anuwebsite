@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  /* Minimalist Light Theme */
-  --background: #FFFFFF;
-  /* Pure White */
-  --foreground: #1A1A1A;
-  /* Nearly Black */
-  --journal-accent: #000000;
-  /* Black Accent */
-  --journal-secondary: #666666;
-  /* Medium Gray */
-  --journal-paper: #F5F5F5;
-  /* Light Gray Paper */
+  /* Artist's Journal Palette */
+  --background: #FDFBF7;
+  /* Warm Cream Paper */
+  --foreground: #2D2A2E;
+  /* Ink Black */
+  --journal-accent: #BC4749;
+  /* Terracotta/Red Stamp */
+  --journal-secondary: #7F5539;
+  /* Leather/Earth */
+  --journal-paper: #F2E8CF;
+  /* Aged Paper */
 }
 
 @theme inline {
