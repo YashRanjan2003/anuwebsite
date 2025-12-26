@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Trash2, ArrowRight } from 'lucide-react';
 
 export default function CartPage() {
-    const { cart, removeFromCart, total } = useCart();
+    const { cart, removeFromCart, updateQuantity, total } = useCart();
 
     if (cart.length === 0) {
         return (
@@ -38,13 +38,29 @@ export default function CartPage() {
                             <div className="flex-1">
                                 <h3 className="font-serif text-xl text-foreground">{item.title}</h3>
                                 <p className="font-sans text-sm text-journal-secondary">{item.category}</p>
+
+                                <div className="flex items-center gap-4 mt-4">
+                                    <button
+                                        onClick={() => updateQuantity(item.id, -1)}
+                                        className="w-8 h-8 flex items-center justify-center rounded-full border border-journal-secondary/30 hover:bg-journal-paper transition-colors"
+                                    >
+                                        -
+                                    </button>
+                                    <span className="font-serif text-lg w-4 text-center">{item.quantity}</span>
+                                    <button
+                                        onClick={() => updateQuantity(item.id, 1)}
+                                        className="w-8 h-8 flex items-center justify-center rounded-full border border-journal-secondary/30 hover:bg-journal-paper transition-colors"
+                                    >
+                                        +
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="text-right">
-                                <p className="font-serif text-xl">${item.price}</p>
+                                <p className="font-serif text-xl">${item.price * item.quantity}</p>
                                 <button
                                     onClick={() => removeFromCart(item.id)}
-                                    className="text-red-400 hover:text-red-600 mt-2"
+                                    className="text-journal-secondary hover:text-red-600 mt-2 transition-colors"
                                 >
                                     <Trash2 size={18} />
                                 </button>

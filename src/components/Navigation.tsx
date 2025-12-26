@@ -48,7 +48,7 @@ export default function Navigation() {
               <X size={48} strokeWidth={1} />
             </button>
             <div className="flex flex-col gap-6 text-center">
-              {['Home', 'Profile', 'Cart', 'Admin'].map((item, i) => (
+              {['Home', 'Profile', 'Cart'].map((item, i) => (
                 <motion.div
                   key={item}
                   initial={{ opacity: 0, y: 20 }}
