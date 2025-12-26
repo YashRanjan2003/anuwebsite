@@ -48,6 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <nav className="space-y-4">
                         <Link href="/admin" className="block text-gray-400 hover:text-white transition-colors text-lg">Dashboard</Link>
                         <Link href="/admin/new" className="block text-gray-400 hover:text-white transition-colors text-lg">New Artwork</Link>
+                        <Link href="/admin/settings" className="block text-gray-400 hover:text-white transition-colors text-lg">Studio Settings</Link>
                         <div className="h-px bg-white/10 my-4" />
                         <Link href="/" target="_blank" className="block text-gray-400 hover:text-white transition-colors text-sm font-mono">View Live Site ↗</Link>
                     </nav>
