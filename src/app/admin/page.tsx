@@ -84,6 +84,7 @@ export default function AdminDashboard() {
                                 <tr>
                                     <th className="p-4">Artwork</th>
                                     <th className="p-4">Price</th>
+                                    <th className="p-4">Qty</th>
                                     <th className="p-4">Status</th>
                                     <th className="p-4 text-right">Actions</th>
                                 </tr>
@@ -100,7 +101,8 @@ export default function AdminDashboard() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="p-4 text-foreground font-bold">${art.price}</td>
+                                        <td className="p-4 text-foreground font-bold">₹{art.price}</td>
+                                        <td className="p-4 text-foreground font-mono">{art.stock_quantity || 1}</td>
                                         <td className="p-4">
                                             <button
                                                 onClick={() => toggleStatus(art.id, art.status)}
@@ -153,10 +155,10 @@ export default function AdminDashboard() {
                                             {order.profiles?.full_name || 'Guest'}
                                             <div className="text-xs text-journal-secondary font-normal">{order.user_id?.slice(0, 8)}...</div>
                                         </td>
-                                        <td className="p-4 font-serif text-lg text-foreground">${order.total_amount}</td>
+                                        <td className="p-4 font-serif text-lg text-foreground">₹{order.total_amount}</td>
                                         <td className="p-4">
                                             <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-                                                    order.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                                order.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                                                 }`}>
                                                 {order.status}
                                             </span>

@@ -5,19 +5,25 @@ import { supabase } from '@/lib/supabase';
 interface ThemeContextType {
     headingFont: string;
     bodyFont: string;
-    updateFonts: (heading: string, body: string) => Promise<void>;
+    heroBackground: string;
+    colorScheme: 'warm' | 'minimal' | 'dark';
+    updateSettings: (heading: string, body: string, hero: string, color: string) => Promise<void>;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
     headingFont: 'var(--font-playfair)',
     bodyFont: 'var(--font-lato)',
-    updateFonts: async () => { },
+    heroBackground: '',
+    colorScheme: 'warm',
+    updateSettings: async () => { },
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Default to Journal theme
     const [headingFont, setHeadingFont] = useState('var(--font-playfair)');
     const [bodyFont, setBodyFont] = useState('var(--font-lato)');
+    const [heroBackground, setHeroBackground] = useState('');
+    const [colorScheme, setColorScheme] = useState<'warm' | 'minimal' | 'dark'>('warm');
 
     useEffect(() => {
         // Fetch initial settings
@@ -26,6 +32,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             if (data) {
                 setHeadingFont(data.heading_font || 'var(--font-playfair)');
                 setBodyFont(data.body_font || 'var(--font-lato)');
+                setHeroBackground(data.hero_background || '');
+                setColorScheme(data.color_scheme || 'warm');
             }
         };
         fetchSettings();
@@ -36,29 +44,45 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
                 (payload: any) => {
                     setHeadingFont(payload.new.heading_font);
                     setBodyFont(payload.new.body_font);
+                    setHeroBackground(payload.new.hero_background);
+                    setColorScheme(payload.new.color_scheme);
                 })
             .subscribe();
 
         return () => { supabase.removeChannel(channel); };
     }, []);
 
-    const updateFonts = async (h: string, b: string) => {
+    const updateSettings = async (h: string, b: string, hero: string, color: string) => {
         // Optimistic update
         setHeadingFont(h);
         setBodyFont(b);
+        setHeroBackground(hero);
+        setColorScheme(color as any);
 
         // Save to DB
         // Check if row exists, if not insert, else update
+        const payload = {
+            heading_font: h,
+            body_font: b,
+            hero_background: hero,
+            color_scheme: color
+        };
+
         const { data } = await supabase.from('site_settings').select('id').single();
         if (!data) {
-            await supabase.from('site_settings').insert({ id: 'global', heading_font: h, body_font: b });
+            await supabase.from('site_settings').insert({ id: 'global', ...payload });
         } else {
-            await supabase.from('site_settings').update({ heading_font: h, body_font: b }).eq('id', 'global');
+            await supabase.from('site_settings').update(payload).eq('id', 'global');
         }
     };
 
+    // Apply color scheme to document element or body
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', colorScheme);
+    }, [colorScheme]);
+
     return (
-        <ThemeContext.Provider value={{ headingFont, bodyFont, updateFonts }}>
+        <ThemeContext.Provider value={{ headingFont, bodyFont, heroBackground, colorScheme, updateSettings }}>
             <div style={{
                 '--font-serif': headingFont,
                 '--font-sans': bodyFont

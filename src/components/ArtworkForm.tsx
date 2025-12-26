@@ -11,6 +11,7 @@ interface ArtworkFormData {
     category: string;
     status: 'available' | 'sold' | 'reserved';
     artistNote: string;
+    stock_quantity: number;
 }
 
 export default function ArtworkForm({ initialData, id }: { initialData?: any, id?: string }) {
@@ -52,6 +53,7 @@ export default function ArtworkForm({ initialData, id }: { initialData?: any, id
                 ...data,
                 imageUrl,
                 price: Number(data.price),
+                stock_quantity: Number(data.stock_quantity) || 1, // Default to 1 if not set
                 status: data.status
             };
 
@@ -104,9 +106,20 @@ export default function ArtworkForm({ initialData, id }: { initialData?: any, id
                     <input {...register('title', { required: true })} className="w-full bg-black border border-white/20 p-3 rounded text-white" />
                 </div>
                 <div className="space-y-2">
-                    <label className="text-sm font-mono text-gray-400">Price ($)</label>
+                    <label className="text-sm font-mono text-gray-400">Price (₹)</label>
                     <input type="number" {...register('price', { required: true })} className="w-full bg-black border border-white/20 p-3 rounded text-white" />
                 </div>
+            </div>
+
+            {/* Stock Quantity */}
+            <div className="space-y-2">
+                <label className="text-sm font-mono text-gray-400">Stock Quantity</label>
+                <input
+                    type="number"
+                    {...register('stock_quantity', { valueAsNumber: true })}
+                    defaultValue={1}
+                    className="w-full bg-black border border-white/20 p-3 rounded text-white"
+                />
             </div>
 
             <div className="grid grid-cols-2 gap-6">

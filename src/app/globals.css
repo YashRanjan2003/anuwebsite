@@ -1,17 +1,30 @@
 @import "tailwindcss";
 
-:root {
-  /* Artist's Journal Palette */
-  --background: #FDFBF7;
-  /* Warm Cream Paper */
-  --foreground: #2D2A2E;
-  /* Ink Black */
-  --journal-accent: #BC4749;
-  /* Terracotta/Red Stamp */
-  --journal-secondary: #7F5539;
-  /* Leather/Earth */
-  --journal-paper: #F2E8CF;
-  /* Aged Paper */
+@layer base {
+  :root {
+    /* Default (Warm) */
+    --background: #FDFBF7;
+    --foreground: #2D2A2E;
+    --journal-accent: #BC4749;
+    --journal-secondary: #7F5539;
+    --journal-paper: #F2E8CF;
+  }
+
+  [data-theme='minimal'] {
+    --background: #FFFFFF;
+    --foreground: #000000;
+    --journal-accent: #000000;
+    --journal-secondary: #666666;
+    --journal-paper: #F5F5F5;
+  }
+
+  [data-theme='dark'] {
+    --background: #1a1a1a;
+    --foreground: #e0e0e0;
+    --journal-accent: #ff6b6b;
+    --journal-secondary: #a8a8a8;
+    --journal-paper: #2d2d2d;
+  }
 }
 
 @theme inline {

@@ -71,7 +71,7 @@ export default function ArtFeed({ selectedCategory, onProductSelect }: { selecte
                             <div className="mt-4 text-center">
                                 <h3 className="font-serif italic text-2xl text-foreground">{item.title}</h3>
                                 <p className="font-sans text-sm text-journal-secondary uppercase tracking-widest mt-1">{item.category}</p>
-                                <p className="font-serif text-lg text-journal-accent mt-2">${item.price}</p>
+                                <p className="font-serif text-lg text-journal-accent mt-2">₹{item.price}</p>
                             </div>
                         </div>
                     </motion.div>

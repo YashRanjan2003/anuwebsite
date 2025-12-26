@@ -9,6 +9,7 @@ export default function CheckoutPage() {
     const [address, setAddress] = useState('');
     const [cardNumber, setCardNumber] = useState('');
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
     // Redirect if empty cart
@@ -28,23 +29,24 @@ export default function CheckoutPage() {
                 return;
             }
 
-            // 1. Create Order
-            const { data: order, error: orderError } = await supabase
+            // 2. Create Order
+            const { data: orderData, error: orderError } = await supabase
                 .from('orders')
                 .insert({
                     user_id: user.id,
                     total_amount: total,
-                    shipping_address: address,
-                    status: 'paid' // Automatically paid in this mock flow
+                    shipping_address: (e.target as any).address.value,
+                    status: 'paid', // Automatically paid in this mock flow
+                    special_instruction: (e.target as any).specialInstructions.value
                 })
                 .select()
                 .single();
 
             if (orderError) throw orderError;
 
-            // 2. Create Order Items
+            // 3. Create Order Items and Update Stock
             const orderItems = cart.map(item => ({
-                order_id: order.id,
+                order_id: orderData.id,
                 artwork_id: item.id,
                 price_at_purchase: item.price
             }));
@@ -55,11 +57,20 @@ export default function CheckoutPage() {
 
             if (itemsError) throw itemsError;
 
-            // 3. Mark Artworks as Sold (Optional logic, requested by user? "status" exists)
-            // For now, let's NOT automatically mark as sold unless it's a unique piece.
-            // Assuming 1:1 unique art:
+            // 4. Update Artworks (Decrement Stock / Mark Sold)
             for (const item of cart) {
-                await supabase.from('artworks').update({ status: 'sold' }).eq('id', item.id);
+                // Assuming item.stock_quantity and item.quantity exist in cart items
+                // If item.quantity is not explicitly stored in cart, assume 1 for each item
+                const newStock = Math.max(0, (item.stock_quantity || 1) - (item.quantity || 1));
+                const newStatus = newStock <= 0 ? 'sold' : item.status;
+
+                await supabase
+                    .from('artworks')
+                    .update({
+                        stock_quantity: newStock,
+                        status: newStatus
+                    })
+                    .eq('id', item.id);
             }
 
             clearCart();
@@ -67,8 +78,9 @@ export default function CheckoutPage() {
             alert('Order placed successfully! Thank you for collecting.');
 
         } catch (err: any) {
-            console.error(err);
-            alert('Checkout failed: ' + err.message);
+            console.error('Checkout error:', err);
+            setError(err.message || 'Payment processing failed');
+            setLoading(false); // Set loading to false in catch block
         } finally {
             setLoading(false);
         }
@@ -79,7 +91,13 @@ export default function CheckoutPage() {
             <div className="w-full max-w-lg space-y-8 animate-fade-in-up">
 
                 <h1 className="font-serif text-4xl italic text-journal-accent text-center">Secure Checkout</h1>
-                <p className="text-center font-sans text-journal-secondary">Total Due: <span className="font-bold text-foreground">${total}</span></p>
+                <p className="text-center font-sans text-journal-secondary">Total Due: <span className="font-bold text-foreground">₹{total}</span></p>
+
+                {error && (
+                    <div className="bg-red-50 text-red-600 p-4 rounded-sm border border-red-100 text-center font-sans text-sm">
+                        {error}
+                    </div>
+                )}
 
                 <form onSubmit={handleCheckout} className="bg-white p-8 shadow-sm border border-journal-paper/50 space-y-6">
 
@@ -118,10 +136,19 @@ export default function CheckoutPage() {
                             <input
                                 required
                                 type="text"
-                                className="w-full bg-journal-paper/20 border-b-2 border-journal-secondary/20 p-3 focus:outline-none focus:border-journal-accent transition-colors font-mono text-lg"
+                                className="bg-white/50 border border-journal-secondary/20 p-4 rounded-sm font-mono text-lg focus:outline-none focus:border-journal-accent"
                                 placeholder="CVC"
                             />
                         </div>
+                    </div>
+
+                    <div className="space-y-2 pt-4">
+                        <label className="text-sm font-bold uppercase tracking-widest text-journal-secondary">Special Instructions</label>
+                        <textarea
+                            placeholder="Gift note, shipping instructions, or just a hello..."
+                            className="w-full bg-white/50 border border-journal-secondary/20 p-4 rounded-sm font-sans text-lg focus:outline-none focus:border-journal-accent min-h-[100px]"
+                            name="specialInstructions"
+                        />
                     </div>
 
                     <button
@@ -129,7 +156,7 @@ export default function CheckoutPage() {
                         disabled={loading}
                         className="w-full bg-journal-secondary text-white font-serif italic text-xl py-4 hover:bg-journal-accent transition-colors disabled:opacity-50 mt-8"
                     >
-                        {loading ? 'Processing...' : `Pay $${total}`}
+                        {loading ? 'Processing...' : `Pay ₹${total}`}
                     </button>
 
                 </form>

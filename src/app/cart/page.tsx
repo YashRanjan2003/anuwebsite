@@ -48,8 +48,15 @@ export default function CartPage() {
                                     </button>
                                     <span className="font-serif text-lg w-4 text-center">{item.quantity}</span>
                                     <button
-                                        onClick={() => updateQuantity(item.id, 1)}
-                                        className="w-8 h-8 flex items-center justify-center rounded-full border border-journal-secondary/30 hover:bg-journal-paper transition-colors"
+                                        onClick={() => {
+                                            if (item.quantity < (item.stock_quantity || 1)) {
+                                                updateQuantity(item.id, 1);
+                                            } else {
+                                                alert(`Only ${item.stock_quantity || 1} available.`);
+                                            }
+                                        }}
+                                        className={`w-8 h-8 flex items-center justify-center rounded-full border border-journal-secondary/30 transition-colors ${item.quantity >= (item.stock_quantity || 1) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-journal-paper'}`}
+                                        disabled={item.quantity >= (item.stock_quantity || 1)}
                                     >
                                         +
                                     </button>
@@ -57,7 +64,7 @@ export default function CartPage() {
                             </div>
 
                             <div className="text-right">
-                                <p className="font-serif text-xl">${item.price * item.quantity}</p>
+                                <p className="font-serif text-xl">₹{item.price * item.quantity}</p>
                                 <button
                                     onClick={() => removeFromCart(item.id)}
                                     className="text-journal-secondary hover:text-red-600 mt-2 transition-colors"
@@ -72,7 +79,7 @@ export default function CartPage() {
                 <div className="flex flex-col items-end gap-4 border-t-2 border-journal-accent/20 pt-8">
                     <div className="flex justify-between w-full max-w-sm text-2xl font-serif">
                         <span>Total</span>
-                        <span>${total}</span>
+                        <span>₹{total}</span>
                     </div>
                     <Link
                         href="/checkout"

@@ -63,17 +63,24 @@ export default function ProductDrawer({ product, onClose }: { product: Artwork |
 
                             <div className="flex-1 flex flex-col justify-between">
                                 <div>
-                                    <p className="text-3xl font-serif text-foreground mb-4">${product.price}</p>
+                                    <div className="flex justify-between items-baseline mb-4">
+                                        <p className="text-3xl font-serif text-foreground min-w-[50px]">₹{product.price}</p>
+                                        <p className="font-mono text-xs text-journal-secondary uppercase tracking-widest">
+                                            {product.status === 'sold' || (product.stock_quantity || 0) <= 0
+                                                ? 'Sold Out'
+                                                : `${product.stock_quantity || 1} available`}
+                                        </p>
+                                    </div>
                                     <p className="text-journal-secondary leading-relaxed max-w-md font-sans">{product.artistNote || "No artist note available."}</p>
                                 </div>
 
                                 <button
                                     onClick={handleAddToCart}
-                                    disabled={product.status === 'sold'}
+                                    disabled={product.status === 'sold' || (product.stock_quantity || 0) <= 0}
                                     className="w-full mt-8 md:mt-0 py-4 bg-journal-accent text-white rounded-sm font-serif italic text-xl hover:bg-journal-secondary transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <ShoppingCart size={20} />
-                                    {product.status === 'sold' ? 'Sold Out' : 'Add to Collection'}
+                                    {product.status === 'sold' || (product.stock_quantity || 0) <= 0 ? 'Sold Out' : 'Add to Collection'}
                                 </button>
                             </div>
                         </div>

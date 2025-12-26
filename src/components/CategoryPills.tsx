@@ -12,10 +12,10 @@ export default function CategoryPills({ activeCategory, onCategoryChange }: { ac
                         key={cat}
                         onClick={() => onCategoryChange(cat)}
                         className={`
-              px-6 py-2 rounded-full font-mono text-sm uppercase tracking-wider transition-all border whitespace-nowrap
+              px-6 py-2 rounded-full font-sans text-sm uppercase tracking-wider transition-all border whitespace-nowrap
               ${activeCategory === cat
-                                ? 'bg-brand-neon text-brand-dark border-brand-neon font-bold shadow-[0_0_10px_rgba(204,255,0,0.3)]'
-                                : 'bg-white/5 text-white/60 border-white/10 hover:border-white/30 hover:bg-white/10 backdrop-blur-md'
+                                ? 'bg-journal-accent text-white border-journal-accent font-bold shadow-md'
+                                : 'bg-white/50 text-journal-secondary border-journal-secondary/20 hover:border-journal-accent/50 hover:bg-white hover:text-journal-accent'
                             }
             `}
                     >

@@ -10,6 +10,7 @@ export interface Artwork {
     category: string;
     status: 'available' | 'sold' | 'reserved';
     artistNote: string;
+    stock_quantity: number;
 }
 
 export function useArtworks(category?: string) {

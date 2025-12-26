@@ -1,4 +1,6 @@
+'use client';
 import type { Metadata } from 'next';
+import { usePathname } from 'next/navigation';
 import { Playfair_Display, Lato, Caveat } from 'next/font/google';
 import './globals.css';
 import Navigation from '@/components/Navigation';
@@ -9,25 +11,26 @@ const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfa
 const lato = Lato({ weight: ['400', '700'], subsets: ['latin'], variable: '--font-lato' });
 const caveat = Caveat({ subsets: ['latin'], variable: '--font-caveat' });
 
-export const metadata: Metadata = {
-  title: 'Artist Journal',
-  description: 'A curated collection of art.',
-};
+// Metadata needs to be in a separate server component or layout_metadata.ts but for now we remove it from here since this is client side.
+// Ideally layout.tsx should be server, and wrapping provider client.
+// Quick fix: Move metadata to page.tsx or keep layout server and make a wrapper.
+// Strategy: Keep layout.tsx client for now as per previous edits, removing config.
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const hideNavigation = pathname.startsWith('/admin');
+
   return (
     <html lang="en">
       <body className={`${playfair.variable} ${lato.variable} ${caveat.variable} font-sans bg-background text-foreground`}>
         <ThemeProvider>
           <CartProvider>
-            <main className="min-h-screen">
-              {children}
-            </main>
-            <Navigation />
+            {children}
+            {!hideNavigation && <Navigation />}
           </CartProvider>
         </ThemeProvider>
       </body>

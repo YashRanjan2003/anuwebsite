@@ -1,15 +1,25 @@
 'use client';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function HeroSpotlight() {
+    const { heroBackground } = useTheme();
+
     return (
         <section className="h-[90vh] w-full relative flex flex-col justify-center items-center overflow-hidden bg-background">
 
             {/* Background Texture/Elements */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none">
-                <div className="absolute top-20 left-20 w-64 h-64 bg-journal-accent rounded-full blur-[120px]" />
-                <div className="absolute bottom-20 right-20 w-80 h-80 bg-journal-secondary rounded-full blur-[100px]" />
-            </div>
+            {heroBackground ? (
+                <div className="absolute inset-0">
+                    <img src={heroBackground} alt="Hero Background" className="w-full h-full object-cover opacity-20" />
+                    <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px]" />
+                </div>
+            ) : (
+                <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <div className="absolute top-20 left-20 w-64 h-64 bg-journal-accent rounded-full blur-[120px]" />
+                    <div className="absolute bottom-20 right-20 w-80 h-80 bg-journal-secondary rounded-full blur-[100px]" />
+                </div>
+            )}
 
             <div className="z-10 text-center flex flex-col items-center gap-8 px-4 max-w-4xl mx-auto">
                 <motion.div

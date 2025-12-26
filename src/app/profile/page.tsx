@@ -84,8 +84,8 @@ export default function ProfilePage() {
                                         <p className="font-mono text-xs text-journal-secondary mb-1">ORDER #{order.id.slice(0, 8)}</p>
                                         <p className="font-serif text-lg">{new Date(order.created_at).toLocaleDateString()}</p>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="font-serif text-2xl text-journal-accent">${order.total_amount}</p>
+                                    <div className="flex justify-between items-start mb-4">
+                                        <p className="font-serif text-2xl text-journal-accent">₹{order.total_amount}</p>
                                         <span className={`text-xs font-bold uppercase tracking-widest px-2 py-1 rounded-full ${order.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                                             }`}>
                                             {order.status}

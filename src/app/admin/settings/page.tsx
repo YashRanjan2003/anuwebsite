@@ -13,15 +13,17 @@ const FONT_OPTIONS = [
 ];
 
 export default function SettingsPage() {
-    const { headingFont, bodyFont, updateFonts } = useTheme();
+    const { headingFont, bodyFont, heroBackground, colorScheme, updateSettings } = useTheme();
     const [hFont, setHFont] = useState(headingFont);
     const [bFont, setBFont] = useState(bodyFont);
+    const [hBg, setHBg] = useState(heroBackground);
+    const [cScheme, setCScheme] = useState(colorScheme);
     const [saving, setSaving] = useState(false);
 
     const handleSave = async () => {
         setSaving(true);
         try {
-            await updateFonts(hFont, bFont);
+            await updateSettings(hFont, bFont, hBg, cScheme);
             alert('Theme updated successfully!');
         } catch (e) {
             console.error(e);
@@ -37,7 +39,38 @@ export default function SettingsPage() {
 
             <div className="bg-white border border-journal-paper p-8 space-y-8 shadow-sm">
 
-                <div className="space-y-4">
+                <div className="space-y-4 pt-8 border-t border-journal-paper/50">
+                    <h2 className="text-2xl font-serif text-foreground">Visual Theme</h2>
+                    <p className="text-journal-secondary">Customize the look and feel.</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <label className="block text-sm font-bold uppercase tracking-widest text-journal-secondary mb-2">Color Scheme</label>
+                            <select
+                                value={cScheme}
+                                onChange={(e) => setCScheme(e.target.value as any)}
+                                className="w-full p-3 bg-journal-paper/20 border border-journal-secondary/20 font-sans text-lg"
+                            >
+                                <option value="warm">Warm Journal (Default)</option>
+                                <option value="minimal">Minimal Gallery (B&W)</option>
+                                <option value="dark">Midnight Studio (Dark)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold uppercase tracking-widest text-journal-secondary mb-2">Hero Background Image</label>
+                            <input
+                                type="text"
+                                value={hBg}
+                                onChange={(e) => setHBg(e.target.value)}
+                                placeholder="https://example.com/image.jpg"
+                                className="w-full p-3 bg-journal-paper/20 border border-journal-secondary/20 font-sans text-lg"
+                            />
+                            <p className="text-xs text-journal-secondary mt-1">Leave empty for default abstract background.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="space-y-4 pt-8 border-t border-journal-paper/50">
                     <h2 className="text-2xl font-serif text-foreground">Typography</h2>
                     <p className="text-journal-secondary">Choose the voice of your journal.</p>
 
