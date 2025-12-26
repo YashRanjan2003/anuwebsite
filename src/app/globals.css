@@ -1,19 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --background: #1a1a1a;
-  --foreground: #ffffff;
-  --brand-neon: #ccff00;
+  /* Artist's Journal Palette */
+  --background: #FDFBF7;
+  /* Warm Cream Paper */
+  --foreground: #2D2A2E;
+  /* Ink Black */
+  --journal-accent: #BC4749;
+  /* Terracotta/Red Stamp */
+  --journal-secondary: #7F5539;
+  /* Leather/Earth */
+  --journal-paper: #F2E8CF;
+  /* Aged Paper */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-brand-neon: var(--brand-neon);
-  --color-brand-dark: #1a1a1a;
+  --color-journal-accent: var(--journal-accent);
+  --color-journal-secondary: var(--journal-secondary);
+  --color-journal-paper: var(--journal-paper);
 
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-roboto-mono);
+  /* Mapping old vars to new scheme to prevent breakage */
+  --color-brand-neon: var(--journal-accent);
+  --color-brand-dark: var(--background);
+
+  --font-sans: var(--font-lato);
+  --font-serif: var(--font-playfair);
+  --font-hand: var(--font-caveat);
 }
 
 body {

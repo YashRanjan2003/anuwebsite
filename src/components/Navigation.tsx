@@ -11,25 +11,26 @@ export default function Navigation() {
   return (
     <>
       {/* Mobile Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-brand-dark/90 border-t border-white/10 p-4 md:hidden z-50 flex justify-around items-center backdrop-blur-md pb-6 safe-area-bottom">
-        <Link href="/" className="text-white hover:text-brand-neon transition-colors">
-          <Home size={24} />
+      <nav className="fixed bottom-0 left-0 right-0 bg-journal-paper/95 border-t border-journal-secondary/20 p-4 md:hidden z-50 flex justify-around items-center backdrop-blur-md pb-6 safe-area-bottom shadow-up">
+        <Link href="/" className="text-journal-secondary hover:text-journal-accent transition-colors">
+          <Home size={24} strokeWidth={1.5} />
         </Link>
-        <Link href="/shop" className="text-white hover:text-brand-neon transition-colors">
-          <ShoppingBag size={24} />
+        <Link href="/cart" className="text-journal-secondary hover:text-journal-accent transition-colors relative">
+          <ShoppingBag size={24} strokeWidth={1.5} />
+          {/* Badge could go here */}
         </Link>
-         <Link href="/profile" className="text-white hover:text-brand-neon transition-colors">
-          <User size={24} />
+        <Link href="/profile" className="text-journal-secondary hover:text-journal-accent transition-colors">
+          <User size={24} strokeWidth={1.5} />
         </Link>
-        <button onClick={() => setIsMenuOpen(true)} className="text-white hover:text-brand-neon transition-colors">
-          <Menu size={24} />
+        <button onClick={() => setIsMenuOpen(true)} className="text-journal-secondary hover:text-journal-accent transition-colors">
+          <Menu size={24} strokeWidth={1.5} />
         </button>
       </nav>
 
-      {/* Desktop Top Nav (Burger only) */}
-      <nav className="hidden md:flex fixed top-0 right-0 p-8 z-50 mix-blend-difference">
-         <button onClick={() => setIsMenuOpen(true)} className="text-white hover:text-brand-neon transition-colors cursor-pointer">
-          <Menu size={40} strokeWidth={1.5} />
+      {/* Desktop Top Nav */}
+      <nav className="hidden md:flex fixed top-0 right-0 p-8 z-50">
+        <button onClick={() => setIsMenuOpen(true)} className="text-journal-secondary hover:text-journal-accent transition-colors cursor-pointer bg-journal-paper/50 p-2 rounded-full border border-journal-secondary/10">
+          <Menu size={32} strokeWidth={1.5} />
         </button>
       </nav>
 
@@ -37,27 +38,27 @@ export default function Navigation() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: '100%' }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: '100%' }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 bg-brand-neon z-[60] flex flex-col items-center justify-center"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="fixed inset-0 bg-journal-paper/98 z-[60] flex flex-col items-center justify-center border-8 border-background overflow-hidden"
           >
-             <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8 text-brand-dark hover:scale-110 transition-transform cursor-pointer">
-              <X size={48} strokeWidth={1.5} />
+            <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8 text-journal-secondary hover:text-journal-accent hover:rotate-90 transition-all cursor-pointer">
+              <X size={48} strokeWidth={1} />
             </button>
-            <div className="flex flex-col gap-4 text-center">
-              {['Home', 'Shop', 'Collections', 'About', 'Contact'].map((item, i) => (
+            <div className="flex flex-col gap-6 text-center">
+              {['Home', 'Profile', 'Cart', 'Admin'].map((item, i) => (
                 <motion.div
                   key={item}
-                  initial={{ opacity: 0, y: 50 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.1 }}
                 >
-                  <Link 
+                  <Link
                     href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
                     onClick={() => setIsMenuOpen(false)}
-                    className="text-6xl md:text-8xl font-black text-brand-dark uppercase tracking-tighter hover:text-white transition-colors"
+                    className="text-5xl md:text-7xl font-serif italic text-journal-secondary hover:text-journal-accent transition-colors"
                   >
                     {item}
                   </Link>
